@@ -1,0 +1,34 @@
+const { DataTypes } = require("sequelize");
+const { sequelize } = require("../config/db");
+const Users = require("./Users");
+const Books = require("./Books");
+
+const Carts = sequelize.define('Cart', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    bookId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+},{
+    tableName: 'Carts',
+    timestamps: true,}
+);
+
+User.hasMany(Carts, { foreignKey: 'userId' });
+Carts.belongsTo(User, {foreignKey: 'userId', as: 'user'});
+Books.hasMany(Carts, { foreignKey: 'bookId' });
+Carts.belongsTo(Books, {foreignKey: 'bookId', as: 'book'});
+
+module.exports = Carts;
