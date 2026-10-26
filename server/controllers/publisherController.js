@@ -10,7 +10,7 @@ exports.getPublishers = async (req, res) => {
 }
 
 exports.getPublishersById = async (req, res) => {
-    try{
+    try {
         const publisher = await Publisher.findByPk(req.params.id);
         if (!publisher) return res.status(404).json({ message: "Penerbit tidak ditemukan" });
         res.json({ publisher });
@@ -53,7 +53,7 @@ exports.updatePublisher = async (req, res) => {
 }
 
 exports.deletePublisher = async (req, res) => {
-    try{
+    try {
         const publisher = await Publisher.findByPk(req.params.id);
         if (!publisher) return res.status(404).json({ message: "Penerbit tidak ditemukan" });
 
