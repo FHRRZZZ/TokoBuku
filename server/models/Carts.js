@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/db");
-const Users = require("./Users");
+const User = require("./User");
 const Books = require("./Books");
 
 const Carts = sequelize.define('Cart', {
@@ -15,6 +15,10 @@ const Carts = sequelize.define('Cart', {
     },
     bookId: {
         type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    totalPrice: {
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     },
     quantity: {
