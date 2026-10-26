@@ -2,49 +2,47 @@ const Carts = require('../models/Carts');
 
 exports.getCartByUserId = async (req, res) => {
     try {
-        const cartItems = await Carts.findAll({
-            where: { userId: req.params.userId },
-            include: [{ model: Books, as: 'book' }]
-        });
-        res.json({ cartItems });
+        const cart = await Carts.findOne({ where: { userId: req.params.userId } });
+        res.json({ cart });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-exports.addToCart = async (req, res) => {
+exports.createCart = async (req, res) => {
     try {
-        const { userId, bookId, quantity } = req.body;
-        if (!userId || !bookId || !quantity) {
-            return res.status(400).json({ message: "User ID, Book ID, dan Quantity harus diisi" });
+        const { userId, totalPrice, quantity } = req.body;
+        const cart = await Carts.create({ userId, totalPrice, quantity });
+        res.status(201).json({ cart });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.updateCart = async (req, res) => {
+    try {
+        const { totalPrice, quantity } = req.body;
+        const cart = await Carts.findOne({ where: { userId: req.params.userId } });
+        if (!cart) {
+            return res.status(404).json({ message: "Keranjang tidak ditemukan" });
         }
-        const cartItem = await Carts.create({ userId, bookId, quantity });
-        res.status(201).json({ cartItem });
+        cart.totalPrice = totalPrice;
+        cart.quantity = quantity;
+        await cart.save();
+        res.json({ cart });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-exports.updateCartItem = async (req, res) => {
+exports.deleteCart = async (req, res) => {
     try {
-        const { quantity } = req.body;
-        const cartItem = await Carts.findByPk(req.params.id);
-        if (!cartItem) return res.status(404).json({ message: "Item keranjang tidak ditemukan" });
-
-        cartItem.quantity = quantity;
-        await cartItem.save();
-        res.json({ cartItem });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-};
-
-exports.deleteCartItem = async (req, res) => {
-    try {
-        const cartItem = await Carts.findByPk(req.params.id);
-        if (!cartItem) return res.status(404).json({ message: "Item keranjang tidak ditemukan" });
-        await cartItem.destroy();
-        res.json({ message: "Item keranjang berhasil dihapus" });
+        const cart = await Carts.findOne({ where: { userId: req.params.userId } });
+        if (!cart) {
+            return res.status(404).json({ message: "Keranjang tidak ditemukan" });
+        }
+        await cart.destroy();
+        res.json({ message: "Keranjang berhasil dihapus" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
